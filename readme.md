@@ -32,6 +32,7 @@ Some of the key features of this template are
  1. Create branch `git branch` and do what you are best at.
 
 #### Future RoadMap Examples
+ 1. Replace sqlite db with postgres
  1. Add testing support
  1. Add celery support out of the box to template
  1. Add logging to local ELK Stack
