@@ -1,0 +1,58 @@
+version: '3.6'
+
+x-logging-1: &default-logging
+  options:
+    max-size: '1m'
+    max-file: '5'
+  driver: json-file
+
+x-logging-2: &default-no-logging
+  driver: none
+
+services:
+
+  web:
+    build:
+      context:  . # root of project
+      dockerfile: ./docker/web/Dockerfile
+    command: python manage.py runserver --insecure 0.0.0.0:8080
+    ports:
+     - ${WEB_SERVICE_PORT:?err}:8080
+    logging: *default-logging
+    depends_on:
+      - db
+
+  db:
+    image: postgres:10.3-alpine
+    environment:
+      POSTGRES_USER: ${DB_POSTGRES_USER:?DB_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${DB_POSTGRES_PASSWORD:?DB_POSTGRES_PASSWORD}
+    volumes:
+      - db-pgdata:/var/lib/postgresql/data
+    ports:
+     - ${DB_SERVICE_PORT:?DB_SERVICE_PORT}:5432
+    logging: *default-logging
+
+  dev_box:
+    build:
+      context:  . # root of project
+      dockerfile: ./docker/dev_box/Dockerfile
+      args:
+        DEVBOX_USER_NAME: ${DEVBOX_USER_NAME:?DEVBOX_USER_NAME}
+        DEVBOX_USER_UID: ${DEVBOX_USER_UID:?DEVBOX_USER_UID}
+        DEVBOX_USER_GUID: ${DEVBOX_USER_GUID:?DEVBOX_USER_GUID}
+        DEVBOX_PWD: ${PWD:?err}
+    command: /bin/bash
+    hostname: yourDjangoProject_dev_box
+    environment:
+      - DOCKER_HOST=tcp://${DEVBOX_DOCKERHOST_IP:?err}:${DEVBOX_DOCKERHOST_PORT:?DEVBOX_DOCKERHOST_PORT}
+      - COMPOSE_PROJECT_NAME=yourDjangoProject_dev_box_${COMPOSE_PROJECT_NAME:?COMPOSE_PROJECT_NAME}
+    volumes:
+      - ${HOME}/:/home/${DEVBOX_USER_NAME:?DEVBOX_USER_NAME}
+    privileged: true
+    working_dir: ${PWD:?PWD}
+    logging: *default-no-logging
+
+volumes:
+  db-pgdata:
+    driver: local

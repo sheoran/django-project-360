@@ -1,0 +1,13 @@
+COMPOSE_PROJECT_NAME: # If Empty its directory name of this file
+DEPLOYMENT_TYPE: development # development || production
+
+DEVBOX_USER_NAME: # If empty its current user of shell
+DEVBOX_USER_UID: # If empty its current user uid
+DEVBOX_USER_GUID: # If empty its current user guid
+DEVBOX_DOCKERHOST_IP: # If emtpy output of ip route get 8.8.8.8 | awk 'NR == 1 {print $NF}'
+DEVBOX_DOCKERHOST_PORT: # If emtpy output of  sudo lsof -i -n -P | grep dockerd | cut -d ':' -f 2 | cut -d ' ' -f 1
+
+WEB_SERVICE_PORT: # If empty will be computed based on development:8080 || production:80
+DB_SERVICE_PORT: 5432
+DB_POSTGRES_USER: postgres
+DB_POSTGRES_PASSWORD: password
